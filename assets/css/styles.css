@@ -1,0 +1,87 @@
+#welcome {
+	background-color: #80c340;
+	padding: 15px;
+	margin-top: 10px;
+}
+
+.atas {
+	margin-top: 20px;
+}
+
+.a {
+	margin-bottom: 20px;
+}
+
+#logo {
+	width: 95%;
+	height: 140px;
+	color: #fff;
+	font-size: 30px;
+	text-align: center;
+	padding: 0px 0;
+}
+.judul {
+	padding: 17px;
+	color: white;
+}
+#home {
+	padding: 20px 50px;
+	background: #fefefe;
+}
+#footer {
+	background-color: #80c340;
+	padding: 20px 0 10px;
+	margin-bottom: 10px;
+}
+.nav-footer {
+text-align: right;
+list-style: none;
+padding: 0;
+}
+.navbar {
+	margin-bottom: 0px;
+}
+.nav-footer li {
+	display: inline;
+}
+.nav-footer li a {
+	padding: 10px 20px;
+	text-decoration: none;
+	color: white;
+}
+
+/* IMAGE */
+.fileUpload {
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+    width: 100%;
+}
+.fileUpload input.upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+.fileUpload2 {
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+    width: 100%;
+}
+.fileUpload2 input.upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}

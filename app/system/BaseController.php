@@ -1,0 +1,71 @@
+<?php namespace system;
+
+use system\loader;
+use system\libraries\input;
+use system\libraries\file;
+use system\libraries\httpLib;
+
+abstract class BaseController
+{
+    protected $urlParams;
+    protected $action;
+
+    public function __construct($action, $urlParams)
+    {
+        require_once APP_PATH . '/vendor/autoload.php';
+        
+        /* LOAD TWIG */
+        require_once APP_PATH . '/vendor/twig/lib/Twig/Autoloader.php';
+        $autoloader     = new \Twig_Autoloader();
+        $autoloader::register();
+        // Twig_Autoloader::register();
+        /* PATH FILE HTML */
+        $this->loader   = new \Twig_Loader_Filesystem(VIEW_PATH);
+        /* CACHE FILE
+        $twig = new Twig_Environment($loader, array( 'cache' => 'cache')); */
+        $this->twig     = new \Twig_Environment($this->loader);
+        $this->view     = $this->twig;
+
+        /* GET CONFIG FILE */
+        global $config;
+        $this->config   = $config;
+
+        /* FROM LIBRARIES */
+        $this->load     = new loader();
+        $this->input    = new input();
+        $this->file     = new file();
+        $this->httpLib  = new httpLib();
+
+        $this->action   = $action;
+        $this->urlParams= $urlParams;
+        $this->params   = $urlParams['params'];
+    }
+
+    public function ExecuteAction()
+    {
+        if ($this->params)
+            return call_user_func_array(array($this, $this->action), $this->params);
+        else
+            return $this->{$this->action}();
+    }
+
+    protected function View($view, $data, $template = true)
+    {
+        $classData = explode("\\", get_class($this));
+        $className = end($classData);
+
+        $content = PUBLIC_PATH . "/views/" . $view . ".php";
+
+        if ($template)
+        {
+            require PUBLIC_PATH . "/views/template.php";
+        } else {
+            require $content;
+        }
+    }
+
+    public static function &getInstance()
+    {
+        return self::$instance;
+    }
+}

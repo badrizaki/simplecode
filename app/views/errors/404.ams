@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Error 404 not found {{ page }}</title>
+	<link href="{{ publicUrlAsset }}css/404.css" rel="stylesheet" type="text/css"  media="all" />
+</head>
+<body>
+	<div class="wrap">
+		<div class="header">
+			<div class="logo">
+				<h1><a href="{{ publicUrl }}">Ohh</a></h1>
+			</div>
+		</div>
+		<div class="content">
+			<img src="{{ publicUrlAsset }}img/404/error-img.png" title="error" />
+			<p><span><label>O</label>hh.....</span>You Requested the page that is no longer There.</p>
+			<a href="{{ publicUrl }}">Back To Home</a>
+		</div>
+	</div>
+</body>
+</html>

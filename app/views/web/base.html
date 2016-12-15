@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.2, user-scalable=yes"/>
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="icon" href="{{ publicUrl }}{{ icon|join('|')|replace({'16|icon|': ""}) }}">
+    <link rel="shortcut icon" href="{{ publicUrl }}{{ icon|join('|')|replace({'16|icon|': ""}) }}">
+    <!-- <link href="http://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css"> -->
+    <link rel="stylesheet" type="text/css" href="{{ publicUrlAsset }}css/fonts.css">
+    <link rel="stylesheet" type="text/css" href="{{ publicUrlAsset }}components/font-awesome/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ publicUrlAsset }}css/bootstrap.css"/>
+    {% block css %}{% endblock %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <!-- START HEADER -->
+    <!-- END HEADER -->
+
+    <!-- START CONTENT -->
+    {% block content %}{% endblock %}
+    <!-- END CONTENT -->
+
+    <!-- START FOOTER -->
+    <!-- END FOOTER -->
+
+    <script src="{{ publicUrlAsset }}js/jquery.js"></script>
+    <script src="{{ publicUrlAsset }}js/bootstrap.min.js"></script>
+    {% block js_include %}{% endblock %}
+    <script>
+    $(document).ready(function() {
+        {% block js_ready %}{% endblock %}
+    });
+    </script>
+</body>
+</html>
