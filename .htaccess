@@ -1,0 +1,6 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+##RewriteRule ^(.*)$ public/$1
+RewriteRule ^([a-zA-Z-_1-9/]*)/?$ \index.php?controller=public/$1  [QSA,L]
