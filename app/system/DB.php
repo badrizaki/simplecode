@@ -1,4 +1,4 @@
-<?php namespace system;
+<?php namespace app\system;
 
 /**
   *  Name         : DB Execution.
@@ -47,6 +47,8 @@
 	WHERE CONDITION
 		$this->where($param, $param2, $param3, $param4, $param5);
 		$this->where('mes.user_id', $param['user_id']); // Simple where result : mes.user_id=:user_id
+		$this->where('param','%'.$param.'%',NULL,'LIKE'); // where param LIKE :param
+		$this->where('param','%'.$param.'%','AND','LIKE'); // AND param LIKE :param
 			$param = can array or string,
 					 if is array you must set key is fieldname form table
 					 if string this is used for fieldname table and $param2 for value
@@ -97,7 +99,7 @@
 	* NOTE this library is not finish, must modif for database sql server
 **/
 
-use config\Database;
+use app\config\Database;
 use PDO;
 
 abstract class DB extends Database
@@ -123,7 +125,7 @@ abstract class DB extends Database
 		$this->value	= array();
 		$this->builder	= array();
 		$this->orderBy 	= '';
-		$this->orderType= 'DESC';
+		$this->orderType = 'DESC';
 		$this->limit 	= '';
 		$this->offset 	= 0;
 		$this->join 	= array();
@@ -144,7 +146,7 @@ abstract class DB extends Database
 	{
 		if (is_array($WHERE))
 		{
-			$this->where 	= $WHERE;
+			$this->where 	= $this->where + $WHERE;
 		}
 		else {
 			if ($BUILDER)
@@ -310,7 +312,7 @@ abstract class DB extends Database
 						{
 							$where .= ' WHERE ' . $value;
 						} else {
-							$where .= ' WHERE ' . $fieldname . $operator . ':' . $key;
+							$where .= ' WHERE ' . $fieldname . ' ' . $operator . ' :' . $key;
 						}
 					}
 					else {
@@ -318,7 +320,7 @@ abstract class DB extends Database
 						{
 							$where .= ' '.$conditionDes.' ' . $value;
 						} else {
-							$where .= ' '.$conditionDes.' ' . $fieldname . $operator . ':' . $key;
+							$where .= ' '.$conditionDes.' ' . $fieldname . ' ' . $operator . ' :' . $key;
 						}
 					}
 					$i++;
@@ -366,7 +368,8 @@ abstract class DB extends Database
 						} else {
 							if (is_string($value)) {
 								$stmt->bindValue(':'.$key, $this->where[$fieldname], PDO::PARAM_STR);
-							} else {
+							}
+							else {
 								$stmt->bindValue(':'.$key, $this->where[$fieldname]);
 							}
 						}
@@ -545,15 +548,15 @@ abstract class DB extends Database
 						{
 							$where .= ' WHERE ' . $value;
 						} else {
-							$where .= ' WHERE ' . $fieldname . $operator . ':' . $key;
+							$where .= ' WHERE ' . $fieldname . ' ' . $operator . ' :' . $key;
 						}
 					}
 					else {
 						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
 						{
-							$where .= ' '.$conditionDes.' ' . $value;
+							$where .= ' ' . $conditionDes . ' ' . $value;
 						} else {
-							$where .= ' '.$conditionDes.' ' . $fieldname . $operator . ':' . $key;
+							$where .= ' ' . $conditionDes . ' ' . $fieldname . ' ' . $operator . ':' . $key;
 						}
 					}
 					$i++;
@@ -607,7 +610,8 @@ abstract class DB extends Database
 						} else {
 							if (is_string($value)) {
 								$stmt->bindValue(':'.$key, $this->where[$fieldname], PDO::PARAM_STR);
-							} else {
+							}
+							else {
 								$stmt->bindValue(':'.$key, $this->where[$fieldname]);
 							}
 						}
@@ -1225,15 +1229,15 @@ abstract class DB extends Database
 						{
 							$where .= ' WHERE ' . $value;
 						} else {
-							$where .= ' WHERE ' . $fieldname . $operator . ':' . $key;
+							$where .= ' WHERE ' . $fieldname . ' ' . $operator . ' :' . $key;
 						}
 					}
 					else {
 						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
 						{
-							$where .= ' '.$conditionDes.' ' . $value;
+							$where .= ' ' . $conditionDes . ' ' . $value;
 						} else {
-							$where .= ' '.$conditionDes.' ' . $fieldname . $operator . ':' . $key;
+							$where .= ' ' . $conditionDes . ' ' . $fieldname . ' ' . $operator . ' :' . $key;
 						}
 					}
 					$i++;
