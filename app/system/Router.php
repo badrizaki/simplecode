@@ -63,7 +63,13 @@ class Router
         } else {
             $this->controller = $this->Controller_Namespace . "errors\\NotFound";
             $this->action = "index";
-            return new $this->controller($this->action,$this->urlParams);
+            if (class_exists($this->controller))
+                return new $this->controller($this->action,$this->urlParams);
+            else {
+                $this->controller = "system\\libraries\\NotFound";
+                $this->action = "index";
+                return new $this->controller($this->action,$this->urlParams);
+            }
         }
     }
 }
