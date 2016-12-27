@@ -11,8 +11,9 @@
 
 class Application
 {
-    function get($url = '', $controllers = '')
+    function get($url = '', $controllers = '', $function = '')
     {
+    	if ($function != '') call_user_func($function());
 		if ($_SERVER['REQUEST_METHOD'] == "GET")
 		{
 			$pass = false;
@@ -83,8 +84,9 @@ class Application
 		}
     }
 
-    function post($url='', $controllers ='')
+    function post($url='', $controllers ='', $function = '')
     {
+    	if ($function != '') call_user_func($function());
 		if ($_SERVER['REQUEST_METHOD'] == "POST")
 		{
 			$pass = false;
@@ -169,5 +171,10 @@ class Application
 
 	    /* CALL CONTROLLER FOR EXECUTION */
 	    $controller->ExecuteAction();
+    }
+
+    function redirect($url = '')
+    {
+    	header('Location: ' . $url);
     }
 }

@@ -36,40 +36,35 @@ class Router
             if (class_exists($this->controller))
             {
                 $parent = class_parents($this->controller);
-
                 if (in_array($this->Base_Controller_Name, $parent))
                 {
-                    if (method_exists($this->controller, $this->action))
+                    if (!method_exists($this->controller, $this->action))
                     {
-                        return new $this->controller($this->action,$this->urlParams);
-                    } else {
                         $this->controller = $this->Controller_Namespace . "errors\\NotFound";
-                        $this->action = "index";
-                        return new $this->controller($this->action,$this->urlParams);
-                        // throw new \Exception("Action not found!");
+                        $this->urlParams['action'] = "index";
                     }
-                } else {
-                    $this->controller = $this->Controller_Namespace . "errors\\NotFound";
-                    $this->action = "index";
-                    return new $this->controller($this->action,$this->urlParams);
-                    // throw new \Exception("Wrong class for controller. Not derived from BaseController.");
                 }
-            } else {
-                $this->controller = $this->Controller_Namespace . "errors\\NotFound";
-                $this->action = "index";
-                return new $this->controller($this->action,$this->urlParams);
-                // throw new \Exception("Controller not found!");
+                else {
+                    $this->controller = $this->Controller_Namespace . "errors\\NotFound";
+                    $this->urlParams['action'] = "index";
+                }
             }
-        } else {
-            $this->controller = $this->Controller_Namespace . "errors\\NotFound";
-            $this->action = "index";
-            if (class_exists($this->controller))
-                return new $this->controller($this->action,$this->urlParams);
             else {
-                $this->controller = "system\\libraries\\NotFound";
-                $this->action = "index";
-                return new $this->controller($this->action,$this->urlParams);
+                $this->controller = $this->Controller_Namespace . "errors\\NotFound";
+                $this->urlParams['action'] = "index";
             }
         }
+        else {
+            if (class_exists($this->controller))
+            {
+                $this->controller = $this->Controller_Namespace . "errors\\NotFound";
+                $this->urlParams['action'] = "index";
+            }
+            else {
+                $this->controller = "system\\libraries\\NotFound";
+                $this->urlParams['action'] = "index";
+            }
+        }
+        return new $this->controller($this->urlParams);
     }
 }

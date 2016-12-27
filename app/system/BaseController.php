@@ -7,10 +7,9 @@ use system\libraries\httpLib;
 
 abstract class BaseController
 {
-    protected $urlParams;
-    protected $action;
+    protected $params;
 
-    public function __construct($action, $urlParams)
+    public function __construct($params)
     {
         require_once APP_PATH . '/vendor/autoload.php';
         
@@ -36,15 +35,14 @@ abstract class BaseController
         $this->file     = new file();
         $this->httpLib  = new httpLib();
 
-        $this->action   = $action;
-        $this->urlParams= $urlParams;
-        $this->params   = $urlParams['params'];
+        $this->action   = $params['action'];
+        $this->param    = $params['params'];
     }
 
     public function ExecuteAction()
     {
-        if ($this->params)
-            return call_user_func_array(array($this, $this->action), $this->params);
+        if ($this->param)
+            return call_user_func_array(array($this, $this->action), $this->param);
         else
             return $this->{$this->action}();
     }
