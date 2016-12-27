@@ -1,4 +1,4 @@
-<?php namespace app\system;
+<?php namespace system;
 
 /**
   *  Name         : DB Execution.
@@ -99,7 +99,7 @@
 	* NOTE this library is not finish, must modif for database sql server
 **/
 
-use app\config\Database;
+use config\Database;
 use PDO;
 
 abstract class DB extends Database
