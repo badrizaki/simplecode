@@ -44,6 +44,9 @@ class file
 			$hasHandle = false;
 			$handleCounter = 0;
 
+			if (is_array($this->fileContent))
+				$this->fileContent = json_encode($this->fileContent) . "\n";
+
 			do {
 				if (!is_dir($Folder)) mkdir($Folder, 0777, true);
 

@@ -1,8 +1,8 @@
 <?php
 
-use system\DB;
+use system\Model;
 
-class UserModel extends DB
+class UserModel extends Model
 {
 	function __construct()
 	{
