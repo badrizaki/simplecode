@@ -11,9 +11,8 @@
 
 class Application
 {
-    function get($url = '', $controllers = '', $function = '')
+    public function get($url = '', $controllers = '', $function = '', $paramFunc = array())
     {
-    	if ($function != '') call_user_func($function());
 		if ($_SERVER['REQUEST_METHOD'] == "GET")
 		{
 			$pass = false;
@@ -60,6 +59,7 @@ class Application
 	    	if ($pass || $url == $_GET['controller'] || $url."/" == $_GET['controller'])
 	    	{
 	    		global $result;
+	    		if ($function != '') call_user_func_array($function, array($paramFunc));
 
 	    		/* EXPLODE FOR CLASS AND FUNCTION */
 	    		list($class, $function) = explode(":", $controllers);
@@ -84,9 +84,8 @@ class Application
 		}
     }
 
-    function post($url='', $controllers ='', $function = '')
+    public function post($url='', $controllers ='', $function = '', $paramFunc = array())
     {
-    	if ($function != '') call_user_func($function());
 		if ($_SERVER['REQUEST_METHOD'] == "POST")
 		{
 			$pass = false;
@@ -132,6 +131,7 @@ class Application
 	    	if ($pass || $url == $_GET['controller'] || $url."/" == $_GET['controller'])
 	    	{
 	    		global $result;
+	    		if ($function != '') call_user_func_array($function, array($paramFunc));
 	    		
 	    		/* EXPLODE FOR CLASS AND FUNCTION */
 	    		list($class, $function) = explode(":", $controllers);
@@ -156,10 +156,10 @@ class Application
 		}
     }
 
-    function NotFound()
+    public function NotFound()
     {
     	/* SET */
-    	$urlParams 	= array("controller" => 'NotFound', "action" => '', "params" => '');
+    	$urlParams 	= array("controller" => 'errors\NotFound', "action" => 'index', "params" => '');
 
 		/* GET ROUTER CLASS */
 	    $router 	= new system\Router($urlParams);
@@ -175,6 +175,6 @@ class Application
 
     function redirect($url = '')
     {
-    	header('Location: ' . $url);
+    	header('Location: ' . $url);die;
     }
 }

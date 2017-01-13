@@ -10,6 +10,8 @@ return array(
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
+    'GeoIp2\\' => array($vendorDir . '/geoip2/geoip2/src/GeoIp2'),
+    'MaxMind\\Db\\' => array($vendorDir . '/geoip2/geoip2/src/MaxMind/Db'),
     'system\\' => array($baseDir . '/system'),
     'controllers\\' => array($baseDir . '/controllers'),
     'config\\' => array($baseDir . '/config')

@@ -25,7 +25,7 @@ class httpLib
 
 	    ## Authentication API
 	    $authenticationAPI = '';
-	    if (count($auth) > 0)
+	    if (count($auth) > 0 && strtoupper($method) == "GET")
 	    {
 		    foreach ($auth as $key => $value)
 		    {
@@ -40,28 +40,40 @@ class httpLib
 	    $url = $url.$authenticationAPI;
 
 	    ## Check parameter
-	    if ($param != "") {
+	    if ($param != "" && strtoupper($method) == "GET")
+	    {
 	        $url = $url . "&" . $param;
 	    }
 
 	    $authGuz = array('auth' => array('user', 'pass'));
 
 	    try {
-		    ## Get Response
-		    $res = $client->request($method, $url, $authGuz);
-
+	    	
 		    /**
 		     * echo $res->getStatusCode(); 200
 			 * $res->getHeaderLine('content-type'); 'application/json; charset=utf8'
 			 * $res->getBody(); {"type":"User"...'
 			*/
-		    
-		    if ($this->isJson($res->getBody()))
+		    if (strtoupper($method) != "GET")
 		    {
-		        $response = json_decode($res->getBody(), true);
+		    	$params = array("form_params" => $auth);
+		    	$paramArr = explode("&", $param);
+		    	foreach ($paramArr as $val)
+		    	{
+		    		list($key, $value) = explode("=", $val);
+		    		$params = $params + array($key => $value);
+		    	}
+				$res = $client->request($method, $url, $params);
+				$response = $res->getBody()->getContents();
 		    } else {
-		        $response = $res->getBody();
+				$res = $client->request($method, $url, $authGuz);
+				$response = $res->getBody()->getContents();
 		    }
+
+		    if ($this->isJson($response))
+		        $response = json_decode($response, true);
+		    else
+		        $response = $response;
 
 			$this->httpStatusMessage = $res->getReasonPhrase();
 		    $this->httpHeader 		= $res->getHeaderLine('content-type');
@@ -72,9 +84,13 @@ class httpLib
 	    	$this->httpStatusMessage = $e->getResponse()->getReasonPhrase();
 	    	$this->httpHeader 		= $e->getResponse()->getHeaderLine('content-type');
 	    	$this->httpStatusCode 	= $e->getResponse()->getStatusCode();
-	    	$this->httpBody 		= $e->getResponse()->getBody();
+	    	$response 		= $e->getResponse()->getBody()->getContents();
+		    if ($this->isJson($response))
+		        $response = json_decode($response, true);
+		    else
+		        $response = $response;
+	    	$this->httpBody 		= $response;
 	    }
-	    // return array("httpStatusCode" => $res->getStatusCode(), "httpBody" => $res->getBody());
 	}
 
 	# Function for hit API

@@ -4,6 +4,9 @@ use system\loader;
 use system\libraries\input;
 use system\libraries\file;
 use system\libraries\httpLib;
+use system\libraries\globalFunction;
+use system\libraries\generatorUniqueCode;
+use GeoIp2\Database\Reader;
 
 abstract class BaseController
 {
@@ -33,7 +36,10 @@ abstract class BaseController
         $this->load     = new loader();
         $this->input    = new input();
         $this->file     = new file();
-        $this->httpLib  = new httpLib();
+        $this->http     = new httpLib();
+        $this->app      = new globalFunction();
+        $this->generateUniqueCode = new generatorUniqueCode();
+        $this->reader = new Reader(BASE_PATH."/geoip/GeoLite2-City.mmdb");
 
         $this->action   = $params['action'];
         $this->param    = $params['params'];

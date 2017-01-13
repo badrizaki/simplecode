@@ -62,8 +62,10 @@
 				$this->where('(tu.userId = :userId OR tu.nama = :nama)','userId=3||nama=tes',NULL,NULL,false);
 
 	ORDER BY
-		$this->limit($param['orderBy']);
-		$this->limit($param['orderType']);
+		$this->orderBy = 'expiredDate';
+		$this->orderType = 'DESC';
+		OR
+		$this->order($param['orderBy'], $param['orderType']);
 
 	LIMIT
 		$this->limit(10);
@@ -96,7 +98,6 @@
 		$params['userId'] = 1;
 		$result = $this->query("select * from tbl_data_user", $params);
 
-	* NOTE this library is not finish, must modif for database sql server
 **/
 
 use config\Database;
@@ -182,6 +183,7 @@ abstract class DB extends Database
 	{
 		$where = '';
 		$join  = '';
+		$orderBy = '';
 
 		## SELECTOR
 		if (!isset($this->select))
@@ -196,6 +198,12 @@ abstract class DB extends Database
 			} else {
 				return array("status" => "error", "result" => "Not table selection");
 			}
+		}
+
+		## ORDER BY, TYPE
+		if ($this->orderBy != '')
+		{
+			$orderBy = ' ORDER BY ' . $this->orderBy . ' ' . $this->orderType . ' ';
 		}
 
 		## JOIN
@@ -333,6 +341,7 @@ abstract class DB extends Database
 					   ' FROM '  . $this->from . 
 					   $join .
 					   $where .
+					   $orderBy .
 					   ';';
 				$this->sql = $sql;
 
@@ -380,6 +389,9 @@ abstract class DB extends Database
 
 				$stmt->execute();
 				$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+				if (!$stmt->rowCount())
+					$result = 'Data empty';
 
 				$response = array(
 					"status" => "success",
@@ -628,6 +640,9 @@ abstract class DB extends Database
 
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				
+				if (!$stmt->rowCount())
+					$result = 'Data empty';
 
 				$response = array(
 					"status" => "success",
@@ -788,7 +803,7 @@ abstract class DB extends Database
 						{
 							$updateCond .= $key . "=?";
 						} else {
-							$updateCond .= "," . $key . "=?";
+							$updateCond .= ", " . $key . "=?";
 						}
 					}
 				}
@@ -852,7 +867,7 @@ abstract class DB extends Database
 						{
 							$updateCond .= $key . "=:" . $key;
 						} else {
-							$updateCond .= "," . $key . "=:" . $key;
+							$updateCond .= ", " . $key . "=:" . $key;
 						}
 					}
 				}
@@ -919,8 +934,8 @@ abstract class DB extends Database
 				$sql = "UPDATE $table SET $updateCond $where ;";
 				$this->sql = $sql;
 				$db = self::getConnection();
-				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+				// $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				// $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				$db->beginTransaction();
 				$stmt = $db->prepare($sql);
 
