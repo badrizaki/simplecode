@@ -4,9 +4,9 @@
   *  Name         : Simplecode Loader.
   *  Description  : This class for loader.
   *  Featured     : Load Model, Load Controller, Load Config, Load Helper
-  *  @copyright   : Atom Media Studio
+  *  @copyright   : Badri Zaki
   *  @version     : 1.0
-  *  @author      : Badri Zaki - badrizaki@atommediastudio.com
+  *  @author      : Badri Zaki - badrizaki@gmail.com
 **/
 
 use system\Router;

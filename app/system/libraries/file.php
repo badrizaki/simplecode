@@ -1,5 +1,15 @@
 <?php namespace system\libraries;
 
+/**
+  *  Name         : File Lib
+  *  Description  : For create text file or get data from text file.
+  *  @copyright   : Badri Zaki
+  *  @version     : 1.0, 2017
+  *  @author      : Badri Zaki - badrizaki@gmail.com
+  *	 @package	  : createLog, getLog, createFile, getDataFile, getFiles, getFileList, cleanFolder,
+  *					cleanFolderList, fixFolder, isJson
+**/
+
 class file
 {
 	public $fileFolder;
@@ -32,6 +42,68 @@ class file
 		unset($this->status);
 	}
 
+	public function createLog($fileName = "", $content = "", $folder = "", $overwrite = false)
+	{
+		$this->fileFolder 	= ($folder)?$folder:$this->fileFolder;
+		$this->fileName 	= ($fileName)?$fileName:$this->fileName;
+		$this->fileContent 	= ($content)?$content:$this->fileContent;
+
+		if ($this->fileFolder && $this->fileName && $this->fileContent)
+		{
+			$Folder = $this->fixFolder($this->fileFolder);
+			if (!is_dir($Folder)) mkdir($Folder, 0777, true);
+			$content = json_encode($content);
+			$data = '"' . date("d-m-Y H:i:s") . '":' . $content . "\n";
+			if (file_exists($Folder."/".$this->fileName))
+			{
+				if ($overwrite)
+				{
+					file_put_contents($Folder."/".$this->fileName, $data);
+				}
+				else {
+					$data = ',"' . date("d-m-Y H:i:s") . '":' . $content . "\n";
+					file_put_contents($Folder."/".$this->fileName, $data, FILE_APPEND);
+				}
+			} else {
+				file_put_contents($Folder."/".$this->fileName, $data);
+			}
+			$this->status = "success";
+			return false;
+		}
+		else {
+			$this->status = "error";
+			return false;
+		}
+	}
+
+	public function getLog($filename = "", $folder = "", $json_decode = true)
+	{
+		$result = '';
+		if ($filename != '')
+		{
+			if (file_exists($folder.'\\'.$filename))
+			{
+				$status = 'SUCCESS';
+				$result = file_get_contents($folder.'\\'.$filename);
+				if ($json_decode)
+				{
+					$result = "{" . trim($result) . "}";
+					if ($this->isJson($result))
+					{
+						$result = json_decode($result, true);
+					}
+				}
+			} else {
+				$status = 'FILE_NOT_EXISTS'; // File not exists, please check your path or file
+			}
+		}
+		else {
+			$status = 'FILENAME_CANNOT_NULL';
+		}
+
+		return array('status' => $status, 'result' => $result);
+	}
+
 	public function createFile($fileName = "", $content = "", $folder = "", $overwrite = false)
 	{
 		$this->fileFolder 	= ($folder)?$folder:$this->fileFolder;
@@ -50,7 +122,9 @@ class file
 			do {
 				if (!is_dir($Folder)) mkdir($Folder, 0777, true);
 
-				if ($overwrite) unlink($Folder."/".$this->fileName);
+				if ($overwrite)
+					if (file_exists($Folder."/".$this->fileName))
+						unlink($Folder."/".$this->fileName);
 				
 				$FH = fopen($Folder."/".$this->fileName,"a+");
 				if ($FH)
@@ -78,6 +152,33 @@ class file
 			$this->status = "error";
 			return false;
 		}
+	}
+
+	public function getDataFile($folder='', $filename='', $json_decode = false)
+	{
+		$result = '';
+		if ($filename != '')
+		{
+			if (file_exists($folder.'\\'.$filename))
+			{
+				$status = 'SUCCESS';
+				$result = file_get_contents($folder.'\\'.$filename);
+				if ($json_decode)
+				{
+					if ($this->isJson($result))
+					{
+						$result = json_decode($result, true);
+					}
+				}
+			} else {
+				$status = 'FILE_NOT_EXISTS'; // File not exists, please check your path or file
+			}
+		}
+		else {
+			$status = 'FILENAME_CANNOT_NULL';
+		}
+
+		return array('status' => $status, 'result' => $result);
 	}
 
 	public function getFiles($folder, $limit = "")
@@ -214,5 +315,12 @@ class file
 		$folder = preg_replace("/\/+/i","/",$folder);
 		$folder = preg_replace("/\/+$/i","",$folder);
 		return $folder;
+	}
+
+	# Function cek json format
+	private function isJson($string)
+	{
+	    json_decode($string);
+	    return (json_last_error() == JSON_ERROR_NONE);
 	}
 }

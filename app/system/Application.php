@@ -4,9 +4,9 @@
   *  Name         : Simplecode App.
   *  Description  : This class for Application get controller and vendor.
   *  Featured     : Method -> get, post and notFound
-  *  @copyright   : Atom Media Studio
+  *  @copyright   : Badri Zaki
   *  @version     : 1.8
-  *  @author      : Badri Zaki - badrizaki@atommediastudio.com
+  *  @author      : Badri Zaki - badrizaki@gmail.com
 **/
 
 class Application
@@ -173,7 +173,7 @@ class Application
 	    $controller->ExecuteAction();
     }
 
-    function redirect($url = '')
+    public function redirect($url = '')
     {
     	header('Location: ' . $url);die;
     }

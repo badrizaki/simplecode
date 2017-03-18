@@ -3,13 +3,9 @@
 /**
   *  Name         : DB Execution.
   *  Description  : This class for execute database from model with extends this class, require database class for connection.
-  *  @copyright   : Atom Media Studio
-  *  @license     : This loader provided to Internal use of Atom Media Studio and it's affiliates, you are 
-  *                 permitted to use this library only if you are employee of Atom Media Studio or you are an 
-  *                 offcial affiliates of Atom Media Studio solely for Internal product development of Atom Media Studio, 
-  *                 distributing or using this library to any unauthorized 3rd party is strictly prohibited.
+  *  @copyright   : Badri Zaki
   *  @version     : 2.0
-  *  @author      : Badri Zaki - badrizaki@atommediastudio.com
+  *  @author      : Badri Zaki - badrizaki@gmail.com
   *
 
   HOW TO USE :
@@ -102,6 +98,7 @@
 
 use config\Database;
 use PDO;
+use system\libraries\globalFunction;
 
 abstract class DB extends Database
 {
@@ -116,6 +113,7 @@ abstract class DB extends Database
 	function __construct()
 	{
 		global $config;
+		$this->global 	= new globalFunction(); 
 		$this->config 	= $config;
 		$this->dbType 	= isset($this->config['database']['connection'])?$this->config['database']['connection']:'';
 		$this->select 	= '*';
@@ -249,6 +247,7 @@ abstract class DB extends Database
 				   ' FROM '  . $this->from . 
 				   $join .
 				   $where .
+				   $orderBy .
 				   ';';
 			$this->sql = $sql;
 
@@ -262,9 +261,12 @@ abstract class DB extends Database
 				if (!$result)
 				{
 					unset($result);
-					$result = "Data empty";
+					$result = "empty";
+				} else {
+					$result = json_decode(json_encode($result), true);
+					$result = $this->global->my_array_map("trim", $result);
 				}
-				
+
 				$response = array(
 					"status" => "success",
 					"result" => $result
@@ -391,7 +393,7 @@ abstract class DB extends Database
 				$result = $stmt->fetch(PDO::FETCH_ASSOC);
 
 				if (!$stmt->rowCount())
-					$result = 'Data empty';
+					$result = 'empty';
 
 				$response = array(
 					"status" => "success",
@@ -412,7 +414,7 @@ abstract class DB extends Database
 	public function getList($table = '')
 	{
 		$where = '';
-		$orderby = '';
+		$orderBy = '';
 		$limit = '';
 		$join  = '';
 
@@ -486,6 +488,7 @@ abstract class DB extends Database
 				   ' FROM '  . $this->from . 
 				   $join .
 				   $where .
+				   $orderBy .
 				   ';';
 			$this->sql = $sql;
 
@@ -502,9 +505,12 @@ abstract class DB extends Database
 				if (!$result)
 				{
 					unset($result);
-					$result = "Data empty";
+					$result = "empty";
+				} else {
+					$result = json_decode(json_encode($result), true);
+					$result = $this->global->my_array_map("trim", $result);
 				}
-				
+
 				$response = array(
 					"status" => "success",
 					"result" => $result
@@ -585,7 +591,7 @@ abstract class DB extends Database
 					   ' FROM '  . $this->from . 
 					   $join .
 					   $where .
-					   $orderby .
+					   $orderBy .
 					   $limit .
 					   ';';
 				$this->sql = $sql;
@@ -642,7 +648,7 @@ abstract class DB extends Database
 				$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				
 				if (!$stmt->rowCount())
-					$result = 'Data empty';
+					$result = 'empty';
 
 				$response = array(
 					"status" => "success",
@@ -875,7 +881,6 @@ abstract class DB extends Database
 				return array("status" => "error", "result" => "Please set your data update");
 			}
 
-			
 			## WHERE
 			if (isset($this->where))
 			{
@@ -982,7 +987,6 @@ abstract class DB extends Database
 						$i++;
 					}
 				}
-
 				$stmt->execute();
 				$db->commit();
 				
@@ -1370,6 +1374,16 @@ abstract class DB extends Database
 				else {
 					unset($result);
 					$result = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+				}
+
+
+				if (!$result)
+				{
+					unset($result);
+					$result = "empty";
+				} else {
+					$result = json_decode(json_encode($result), true);
+					$result = $this->global->my_array_map("trim", $result);
 				}
 
 				$response = array(

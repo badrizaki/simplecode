@@ -1,5 +1,15 @@
 <?php namespace system\libraries;
 
+/**
+  *  Name         : Global Function
+  *  Description  : All function include in here.
+  *  @copyright   : Badri Zaki
+  *  @version     : 1.0, 2017
+  *  @author      : Badri Zaki - badrizaki@gmail.com
+  *  @package     : redirect, isJson, toArray, my_array_map, objectToArray, sendEmail, createImageFromBase64,
+  *                 uploadImage, uploadFile, reArrayFiles, formatDate, maxWords, replaceUrl, timeElapsedString
+**/
+
 class globalFunction
 {
 	function __construct()
@@ -20,6 +30,16 @@ class globalFunction
     public function toArray($d)
     {
         return json_decode(json_encode($d), True);
+    }
+
+    ## MULTIDIMENSION array map
+    public function my_array_map($function, $arr)
+    {
+        $result = array();
+        foreach ($arr as $key => $val)
+            $result[$key] = (is_array($val) ? $this->my_array_map($function, $val) : $function($val));
+
+        return $result;
     }
 
     # Convert object data to array
@@ -220,8 +240,9 @@ class globalFunction
 
         ## New filename
         $temp = explode(".", $files["imageUpload"]["name"]);
-        if ($filename == "") $filename = round(microtime(true));
-        $newfilename = $filename . '.' . end($temp);    
+        if ($filename == "") $filename = uniqid("img_");
+        // if ($filename == "") $filename = round(microtime(true));
+        $newfilename = $filename . '.' . end($temp);
         $target_file = $target_dir . $newfilename;
         // $target_file = $target_dir . basename($files["imageUpload"]["name"]);
         

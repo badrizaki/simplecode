@@ -1,12 +1,16 @@
 <?php namespace system;
 
+use stdClass;
 use system\loader;
 use system\libraries\input;
 use system\libraries\file;
 use system\libraries\httpLib;
 use system\libraries\globalFunction;
 use system\libraries\generatorUniqueCode;
-use GeoIp2\Database\Reader;
+use system\libraries\validation;
+use system\libraries\visitor;
+use system\libraries\ErrorPage;
+use system\libraries\Messages;
 
 abstract class BaseController
 {
@@ -26,23 +30,32 @@ abstract class BaseController
         /* CACHE FILE
         $twig = new Twig_Environment($loader, array( 'cache' => 'cache')); */
         $this->twig     = new \Twig_Environment($this->loader);
-        $this->view     = $this->twig;
+        // $this->view     = $this->twig;
 
         /* GET CONFIG FILE */
         global $config;
         $this->config   = $config;
 
         /* FROM LIBRARIES */
+        $this->errorPage = new ErrorPage();
         $this->load     = new loader();
-        $this->input    = new input();
-        $this->file     = new file();
-        $this->http     = new httpLib();
-        $this->app      = new globalFunction();
-        $this->generateUniqueCode = new generatorUniqueCode();
-        $this->reader = new Reader(BASE_PATH."/geoip/GeoLite2-City.mmdb");
+        $this->libraries();
 
         $this->action   = $params['action'];
         $this->param    = $params['params'];
+    }
+
+    public function libraries()
+    {
+        $this->lib = new stdClass();
+        $this->lib->input    = new input();
+        $this->lib->file     = new file();
+        $this->lib->http     = new httpLib();
+        $this->lib->global   = new globalFunction();
+        $this->lib->generateUniqueCode  = new generatorUniqueCode();
+        $this->lib->validation          = new validation();
+        $this->lib->visitor  = new visitor();
+        $this->lib->flash    = new Messages();
     }
 
     public function ExecuteAction()
@@ -53,7 +66,12 @@ abstract class BaseController
             return $this->{$this->action}();
     }
 
-    protected function View($view, $data, $template = true)
+    public function view($view = '', $data = array())
+    {
+        echo $this->twig->render($view, $data);
+    }
+
+    protected function view_def($view, $data, $template = true)
     {
         $classData = explode("\\", get_class($this));
         $className = end($classData);

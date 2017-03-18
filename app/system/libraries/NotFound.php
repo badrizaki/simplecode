@@ -6,7 +6,7 @@ class NotFound extends BaseController
 {
     protected function Index()
     {
-    	$this->http->_http_response_code(404);
+    	$this->lib->http->_http_response_code(404);
         echo '<!DOCTYPE HTML>
         <html>
         <head>

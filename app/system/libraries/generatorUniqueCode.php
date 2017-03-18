@@ -2,7 +2,7 @@
 
 /**
   *  Name         : Generator Unique Code
-  *  Description  : This function for generate pinCode.
+  *  Description  : This function for generate unique code.
   *  @copyright   : Badri Zaki
   *  @version     : 1.2, 2015
   *  @author      : Badri Zaki - badrizaki@gmail.com

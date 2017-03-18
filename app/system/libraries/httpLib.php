@@ -2,6 +2,15 @@
 
 use GuzzleHttp\Client;
 
+/**
+  *  Name         : Http Lib
+  *  Description  : For HIT API or url.
+  *  @copyright   : Badri Zaki
+  *  @version     : 0.5, 2016
+  *  @author      : Badri Zaki - badrizaki@gmail.com
+  *	 @package	  : hitAPI(Using GuzzleHttp Library), callAPI(Using curl), isJson, _http_response_code
+**/
+
 class httpLib
 {
 	public $httpStatusMessage = '';
@@ -56,14 +65,23 @@ class httpLib
 			*/
 		    if (strtoupper($method) != "GET")
 		    {
-		    	$params = array("form_params" => $auth);
-		    	$paramArr = explode("&", $param);
-		    	foreach ($paramArr as $val)
+		    	$params = $auth;
+		    	if ($param != '')
 		    	{
-		    		list($key, $value) = explode("=", $val);
-		    		$params = $params + array($key => $value);
+		    		if (is_array($param))
+		    		{
+		    			$params = $params + $param;
+		    		}
+		    		else {
+				    	$paramArr = explode("&", $param);
+				    	foreach ($paramArr as $val)
+				    	{
+				    		list($key, $value) = explode("=", $val);
+				    		$params = $params + array($key => $value);
+			    		}
+			    	}
 		    	}
-				$res = $client->request($method, $url, $params);
+				$res = $client->request($method, $url, array('form_params' => $params));
 				$response = $res->getBody()->getContents();
 		    } else {
 				$res = $client->request($method, $url, $authGuz);
