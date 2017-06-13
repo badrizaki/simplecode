@@ -4,9 +4,9 @@
   *  Name         : Global Function
   *  Description  : All function include in here.
   *  @copyright   : Badri Zaki
-  *  @version     : 1.0, 2017
+  *  @version     : 1.0.1, 2017
   *  @author      : Badri Zaki - badrizaki@gmail.com
-  *  @package     : redirect, isJson, toArray, my_array_map, objectToArray, sendEmail, createImageFromBase64,
+  *  @package     : redirect, isJson, toArray, my_array_map, objectToArray, parseDataSearch, sendEmail, createImageFromBase64,
   *                 uploadImage, uploadFile, reArrayFiles, formatDate, maxWords, replaceUrl, timeElapsedString
 **/
 
@@ -58,6 +58,22 @@ class globalFunction
         }
     }
 
+    # For search on datatables param1=param1&param2=param2 ...
+    public function parseDataSearch($value = '')
+    {
+        $params = array();
+        $valueArr = explode('&', $value);
+        foreach ($valueArr as $k => $data)
+        {
+            $dataArr = explode("=", $data);
+            if (count($dataArr) > 1)
+            {
+                $params[$dataArr[0]] = $dataArr[1];
+            }
+        }
+        return $params;
+    }
+
     # Function for send email with SMTP
     public function sendEmail($param = array())
     {
@@ -91,7 +107,7 @@ class globalFunction
             /*require_once "PHPMailer/PHPMailerAutoload.php";*/
             require_once "PHPMailer/class.phpmailer.php";
             require_once "PHPMailer/class.smtp.php";
-            $mail = new PHPMailer;
+            $mail = new \PHPMailer;
 
             # Check mode
             if ($param['config']['mode'] == "mail")
@@ -381,27 +397,33 @@ class globalFunction
         return $file_ary;
     }
 
-    # Change date format to format date Indonesia
-    public function formatDate($date)
+    # Change date format default to format date Indonesia
+    # $format = "Y-m-d"
+    public function formatDate($date="", $format = "")
     {
         $result = $date;
-        if (strtotime($date) > 0)
+        if ($format == "")
         {
-            # Month in indonesia
-            $bulanText = array("Januari", "Februari", "Maret",
-                               "April", "Mei", "Juni",
-                               "Juli", "Agustus", "September",
-                               "Oktober", "November", "Desember");
+            if (strtotime($date) > 0)
+            {
+                # Month in indonesia
+                $bulanText = array("Januari", "Februari", "Maret",
+                                   "April", "Mei", "Juni",
+                                   "Juli", "Agustus", "September",
+                                   "Oktober", "November", "Desember");
 
-            # Get year
-            $tahun = substr($date, 0, 4);
-            # Get Month
-            $bulan = substr($date, 5, 2);
-            # Get Date
-            $tgl   = substr($date, 8, 2);
+                # Get year
+                $tahun = substr($date, 0, 4);
+                # Get Month
+                $bulan = substr($date, 5, 2);
+                # Get Date
+                $tgl   = substr($date, 8, 2);
 
-            # Convert format date to (9 Agustus 2015)
-            $result = $tgl . " " . $bulanText[(int)$bulan-1] . " ". $tahun;
+                # Convert format date to (9 Agustus 2015)
+                $result = $tgl . " " . $bulanText[(int)$bulan-1] . " ". $tahun;
+            }
+        } else {
+            $result = date($format, strtotime($date));
         }
         return $result;
     }

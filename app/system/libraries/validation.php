@@ -88,7 +88,8 @@ class validation
 	*/
 	public function onlyLetter($param='', $field='', $rule='')
 	{
-		if ($param != "" AND !preg_match('/^[a-z][a-z\s-]*$/i',$param))
+		if ($param != "" AND !preg_match('/^[a-z][A-Za-z0-9_\s-]*$/i',$param))
+		// if ($param != "" AND !preg_match('/^[a-z][a-z\s-]*$/i',$param))
 		{
 			$statusCode = "008";
 			$statusDesc = "Format $field tidak valid (Hanya huruf dan spasi)";

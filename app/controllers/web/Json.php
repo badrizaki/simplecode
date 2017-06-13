@@ -7,6 +7,6 @@ class Json extends BaseController
     public function index()
     {
     	$data = $this->config;
-    	echo json_encode($data);
+    	$this->response->json($data);
     }
 }

@@ -76,8 +76,11 @@ class httpLib
 				    	$paramArr = explode("&", $param);
 				    	foreach ($paramArr as $val)
 				    	{
-				    		list($key, $value) = explode("=", $val);
-				    		$params = $params + array($key => $value);
+				    		if ($val)
+				    		{
+					    		list($key, $value) = explode("=", $val);
+					    		$params = $params + array($key => $value);
+				    		}
 			    		}
 			    	}
 		    	}

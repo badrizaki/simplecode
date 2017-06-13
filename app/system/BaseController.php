@@ -11,6 +11,8 @@ use system\libraries\validation;
 use system\libraries\visitor;
 use system\libraries\ErrorPage;
 use system\libraries\Messages;
+use system\libraries\Response;
+use system\libraries\StatusExecution;
 
 abstract class BaseController
 {
@@ -37,8 +39,9 @@ abstract class BaseController
         $this->config   = $config;
 
         /* FROM LIBRARIES */
-        $this->errorPage = new ErrorPage();
-        $this->load     = new loader();
+        $this->errorPage    = new ErrorPage();
+        $this->load         = new loader();
+        $this->response     = new Response();
         $this->libraries();
 
         $this->action   = $params['action'];
@@ -56,6 +59,7 @@ abstract class BaseController
         $this->lib->validation          = new validation();
         $this->lib->visitor  = new visitor();
         $this->lib->flash    = new Messages();
+        $this->lib->statusExecution    = new StatusExecution();
     }
 
     public function ExecuteAction()

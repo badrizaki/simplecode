@@ -125,6 +125,7 @@ abstract class DB extends Database
 		$this->builder	= array();
 		$this->orderBy 	= '';
 		$this->orderType = 'DESC';
+		$this->groupBy	= '';
 		$this->limit 	= '';
 		$this->offset 	= 0;
 		$this->join 	= array();
@@ -138,6 +139,10 @@ abstract class DB extends Database
 		}
 	}
 
+	function __destruct()
+	{
+	}
+	
 	public function select 	($SELECT = '*') 		{ $this->select = $SELECT; 	}
 	public function from 	($FROM = '') 			{ $this->from 	= $FROM; 	}
 
@@ -170,11 +175,41 @@ abstract class DB extends Database
 		$this->orderType 	= $ORDERTYPE;
 	}
 
+	public function groupBy($field = '')
+	{
+		$this->groupBy = $field;
+	}
+
 	public function limit 	($LIMIT = '') 			{ $this->limit 	= $LIMIT; 	}
 	public function offset 	($OFFSET = 0) 			{ $this->offset	= $OFFSET; 	}
 	public function join 	($JOIN = '', $ON = '') 	{ $this->join[$JOIN] = $ON; }
 	public function allRow 	($ALLROW = '') 			{ $this->allRow	= $ALLROW; 	}
 	public function traceQuery() 					{ return $this->sql; }
+
+	public function resetAll()
+	{
+		$this->select 	= '*';
+		$this->from 	= '';
+		$this->where 	= array();
+		$this->condition= array();
+		$this->operator	= array();
+		$this->value	= array();
+		$this->builder	= array();
+		$this->orderBy 	= '';
+		$this->orderType = 'DESC';
+		$this->groupBy	= '';
+		$this->limit 	= '';
+		$this->offset 	= 0;
+		$this->join 	= array();
+		$this->allRow	= true;
+		$this->sql		= '';
+		unset($this->select);
+		unset($this->from);
+		unset($this->where);
+		unset($this->order);
+		// unset($this->orderBy);
+		// unset($this->orderType);
+	}
 
 	## FOR GET ONE ROW ONLY
 	public function get($table = '')
@@ -188,7 +223,7 @@ abstract class DB extends Database
 			$this->select = '*';
 
 		## FROM TABLE
-		if (!isset($this->from) || $this->from == '')
+		if ((!isset($this->from) || $this->from == '') || $table != '')
 		{
 			if ($table != '')
 			{
@@ -223,6 +258,7 @@ abstract class DB extends Database
 			## WHERE
 			if (isset($this->where))
 			{
+				$i = 1;
 				foreach ($this->where as $key => $value)
 				{
 					$fieldname = $key;
@@ -234,19 +270,57 @@ abstract class DB extends Database
 						$fieldname = $as.'.'.$key;
 					}
 
-					if ($where == '')
+					## AND OR
+					if (isset($this->condition[$i]))
+					{
+						$conditionDes = $this->condition[$i];
+					} else {
+						$conditionDes = 'AND';
+					}
+
+					## OPERATOR =<>=
+					if (isset($this->operator[$i]))
+					{
+						$operator = $this->operator[$i];
+					} else {
+						$operator = '=';
+					}
+
+					/*if ($where == '')
 					{
 						$where .= ' WHERE ' . $fieldname . '=?';
 					} else {
 						$where .= ' AND ' . $fieldname . '=?';
+					}*/
+					if ($where == '')
+					{
+						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
+						{
+							$where .= ' WHERE ' . $value;
+						} else {
+							$where .= ' WHERE ' . $fieldname . ' ' . $operator . ' :' . $key;
+						}
 					}
+					else {
+						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
+						{
+							$where .= ' '.$conditionDes.' ' . $value;
+						} else {
+							$where .= ' '.$conditionDes.' ' . $fieldname . ' ' . $operator . ' :' . $key;
+						}
+					}
+					$i++;
 				}
 			}
 
+			$groupBy = "";
+			if ($this->groupBy != "") $groupBy = " GROUP BY ".$this->groupBy;
+			
 			$sql = 'SELECT ' . $this->select . 
 				   ' FROM '  . $this->from . 
 				   $join .
 				   $where .
+				   $groupBy .
 				   $orderBy .
 				   ';';
 			$this->sql = $sql;
@@ -336,6 +410,8 @@ abstract class DB extends Database
 					$i++;
 				}
 			}
+			$groupBy = "";
+			if ($this->groupBy != "") $groupBy = " GROUP BY ".$this->groupBy;
 
 			## EXECUTE
 			try{
@@ -343,6 +419,7 @@ abstract class DB extends Database
 					   ' FROM '  . $this->from . 
 					   $join .
 					   $where .
+					   $groupBy . 
 					   $orderBy .
 					   ';';
 				$this->sql = $sql;
@@ -407,6 +484,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 
@@ -423,7 +502,8 @@ abstract class DB extends Database
 			$this->select = '*';
 
 		## FROM TABLE
-		if (!isset($this->from) || $this->from == '')
+		// if (!isset($this->from) || $this->from == '')
+		if ((!isset($this->from) || $this->from == '') || $table != '')
 		{
 			if ($table != '')
 				$this->from = $table;
@@ -464,6 +544,7 @@ abstract class DB extends Database
 			## WHERE
 			if (isset($this->where))
 			{
+				$i = 1;
 				foreach ($this->where as $key => $value)
 				{
 					$fieldname = $key;
@@ -475,19 +556,57 @@ abstract class DB extends Database
 						$fieldname = $as.'.'.$key;
 					}
 
-					if ($where == '')
+					## AND OR
+					if (isset($this->condition[$i]))
+					{
+						$conditionDes = $this->condition[$i];
+					} else {
+						$conditionDes = 'AND';
+					}
+
+					## OPERATOR =<>=
+					if (isset($this->operator[$i]))
+					{
+						$operator = $this->operator[$i];
+					} else {
+						$operator = '=';
+					}
+
+					/*if ($where == '')
 					{
 						$where .= ' WHERE ' . $fieldname . '=?';
 					} else {
 						$where .= ' AND ' . $fieldname . '=?';
+					}*/
+					if ($where == '')
+					{
+						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
+						{
+							$where .= ' WHERE ' . $value;
+						} else {
+							$where .= ' WHERE ' . $fieldname . ' ' . $operator . ' :' . $key;
+						}
 					}
+					else {
+						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
+						{
+							$where .= ' '.$conditionDes.' ' . $value;
+						} else {
+							$where .= ' '.$conditionDes.' ' . $fieldname . ' ' . $operator . ' :' . $key;
+						}
+					}
+					$i++;
 				}
 			}
+
+			$groupBy = "";
+			if ($this->groupBy != "") $groupBy = " GROUP BY ".$this->groupBy;
 
 			$sql = 'SELECT ' . $limit . $this->select . 
 				   ' FROM '  . $this->from . 
 				   $join .
 				   $where .
+				   $groupBy .
 				   $orderBy .
 				   ';';
 			$this->sql = $sql;
@@ -585,12 +704,16 @@ abstract class DB extends Database
 			if(isset($this->limit) && $this->limit != '')
 				$limit = " LIMIT :limit OFFSET :offset ";
 
+			$groupBy = "";
+			if ($this->groupBy != "") $groupBy = " GROUP BY ".$this->groupBy;
+
 			## EXECUTE
 			try{
 				$sql = 'SELECT ' . $this->select . 
 					   ' FROM '  . $this->from . 
 					   $join .
 					   $where .
+					   $groupBy . 
 					   $orderBy .
 					   $limit .
 					   ';';
@@ -661,6 +784,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 
@@ -780,6 +905,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 
@@ -820,16 +947,70 @@ abstract class DB extends Database
 			## WHERE
 			if (isset($this->where) && count($this->where) > 0)
 			{
+				$i = 1;
 				foreach ($this->where as $key => $value)
 				{
+					$fieldname = $key;
+					$values[] = &$this->where[$fieldname];
+
+					if (strpos($key, '.'))
+					{
+						list($as, $key) = explode('.', $key);
+						$fieldname = $as.'.'.$key;
+					}
+
+					## AND OR
+					if (isset($this->condition[$i]))
+					{
+						$conditionDes = $this->condition[$i];
+					} else {
+						$conditionDes = 'AND';
+					}
+
+					## OPERATOR =<>=
+					if (isset($this->operator[$i]))
+					{
+						$operator = $this->operator[$i];
+					} else {
+						$operator = '=';
+					}
+
+					/*if ($where == '')
+					{
+						$where .= ' WHERE ' . $fieldname . '=?';
+					} else {
+						$where .= ' AND ' . $fieldname . '=?';
+					}*/
+					if ($where == '')
+					{
+						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
+						{
+							$where .= ' WHERE ' . $value;
+						} else {
+							$where .= ' WHERE ' . $fieldname . ' ' . $operator . ' :' . $key;
+						}
+					}
+					else {
+						if (isset($this->builder[$key]) && $this->builder[$key] === FALSE)
+						{
+							$where .= ' '.$conditionDes.' ' . $value;
+						} else {
+							$where .= ' '.$conditionDes.' ' . $fieldname . ' ' . $operator . ' :' . $key;
+						}
+					}
+					$i++;
+				}
+				/*foreach ($this->where as $key => $value)
+				{
 					$values[] = &$this->where[$key];
+
 					if ($where == '')
 					{
 						$where .= ' WHERE ' . $key . '=?';
 					} else {
 						$where .= ' AND ' . $key . '=?';
 					}
-				}
+				}*/
 			} else {
 				return array("status" => "error", "result" => "Where condition cannot empty");
 			}
@@ -939,8 +1120,8 @@ abstract class DB extends Database
 				$sql = "UPDATE $table SET $updateCond $where ;";
 				$this->sql = $sql;
 				$db = self::getConnection();
-				// $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				// $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				$db->beginTransaction();
 				$stmt = $db->prepare($sql);
 
@@ -1001,6 +1182,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 
@@ -1115,6 +1298,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 
@@ -1129,7 +1314,7 @@ abstract class DB extends Database
 			$this->select = '*';
 
 		## FROM TABLE
-		if (!isset($this->from) || $this->from == '')
+		if ((!isset($this->from) || $this->from == '') || $table != '')
 		{
 			if ($table != '')
 			{
@@ -1147,6 +1332,9 @@ abstract class DB extends Database
 				$join .= ' LEFT JOIN '.$key.' ON '.$value.' ';
 			}
 		}
+
+		if ($this->groupBy != "" && $field == 'COUNT(*) AS total')
+			$field = "COUNT(DISTINCT $this->groupBy) AS total";
 
 		##########################
 		##     SQL SERVER		##
@@ -1327,6 +1515,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 
@@ -1468,6 +1658,8 @@ abstract class DB extends Database
 				);
 			}
 		}
+
+		$this->resetAll();
 		return $response;
 	}
 }
