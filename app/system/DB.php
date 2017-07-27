@@ -1659,7 +1659,7 @@ abstract class DB extends Database
 			}
 		}
 
-		$this->resetAll();
+		// $this->resetAll();
 		return $response;
 	}
 }
